@@ -7,14 +7,14 @@ public class Main {
     static ArrayList<String> todoList = new ArrayList<>();
     static Command command;
     static String foundCommand;
-
+    static String inText;
     public static void main(String[] args) {
         boolean check = true;
         Scanner sc = new Scanner(System.in);
         do {
             System.out.println("Введите одну из команд (HELP для справки)");
-            String inText = sc.nextLine().trim();
-            Pattern pattern = Pattern.compile("^(ADD\\s\\d*)?(EDIT\\s\\d+)?(DELETE\\s\\d+)?(EXIT)?(LIST)?(HELP)?");
+            inText = sc.nextLine().trim();
+            Pattern pattern = Pattern.compile("^(ADD\\s\\d*)?(EDIT\\s\\d+)?(DELETE\\s\\d+)?(LIST)?(HELP)?(EXIT)?");
             Matcher matcher = pattern.matcher(inText);
             while (matcher.find()) {
                 foundCommand = inText.substring(matcher.start(), matcher.end()).trim();
@@ -42,7 +42,7 @@ public class Main {
                         todoList.add(Integer.parseInt(sAddNum[1]), sAddNum[2]);
                     } else if (sAddNum.length == 3) {
                         todoList.add(sAddNum[2]);
-                    }
+                    } else System.out.println("\tВы не ввели задачу!");
                     break;
                 case DELETE:
                     foundCommand = foundCommand.replaceAll("[^\\d+]", "");
@@ -57,7 +57,7 @@ public class Main {
                         break;
                     }
                 default:
-                    System.out.println("Команда не распознана!");
+                    System.out.println("\tКоманда не распознана!");
                     break;
             }
         } while (check);
@@ -65,11 +65,11 @@ public class Main {
     }
 
     static void checkCommand() {
-        if (foundCommand.matches("^EXIT")) {
+        if (inText.matches("^EXIT")) {
             command = Command.EXIT;
-        } else if (foundCommand.matches("^HELP")) {
+        } else if (inText.matches("^HELP")) {
             command = Command.HELP;
-        } else if (foundCommand.matches("^LIST")) {
+        } else if (inText.matches("^LIST")) {
             command = Command.LIST;
         } else if (foundCommand.matches("^ADD")) {
             command = Command.ADD;
@@ -91,15 +91,15 @@ public class Main {
             for (int i = 0; i < todoList.size(); i++) {
                 System.out.println(i + " - " + todoList.get(i));
             }
-        } else System.out.println("Список задач пустой");
+        } else System.out.println("\tСписок задач пуст");
     }
 
     static String getHelpList() {
-        return ("\t- Введите <<LIST>> чтобы получить список всех задач" +
-                "\n\t- Введите <<ADD \"новая_задача\">> чтобы добавить новую задачу " +
-                "или <<ADD \"порядковый_номер_задачи(от 0)\" \"текст_новой_задачи\">>" +
-                "\n\t- Введите <<EDIT \"порядковый_номер_задачи(от 0)\" \"новый_тест_задачи\">> чтобы изменить текст задачи" +
-                "\n\t- Введите <<DELETE \"порядковый_номер_задачи(от 0)\">> чтобы удалить эту задачу" +
-                "\n\t- Введите <<EXIT>> чтобы завершить программу");
+        return ("""
+                \t- Введите <<LIST>> чтобы получить список всех задач
+                \t- Введите <<ADD "новая_задача">> чтобы добавить новую задачу или <<ADD "порядковый_номер_задачи(от 0)" "текст_новой_задачи">>
+                \t- Введите <<EDIT "порядковый_номер_задачи(от 0)" "новый_тест_задачи">> чтобы изменить текст задачи
+                \t- Введите <<DELETE "порядковый_номер_задачи(от 0)">> чтобы удалить эту задачу
+                \t- Введите <<EXIT>> чтобы завершить программу""");
     }
 }
