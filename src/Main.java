@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public class Main {
     static ArrayList<String> todoList = new ArrayList<>();
     static Command command;
-    static String findCommand;
+    static String foundCommand;
 
     public static void main(String[] args) {
         boolean check = true;
@@ -17,7 +17,7 @@ public class Main {
             Pattern pattern = Pattern.compile("^(ADD\\s\\d*)?(EDIT\\s\\d+)?(DELETE\\s\\d+)?(EXIT)?(LIST)?(HELP)?");
             Matcher matcher = pattern.matcher(inText);
             while (matcher.find()) {
-                findCommand = inText.substring(matcher.start(), matcher.end()).trim();
+                foundCommand = inText.substring(matcher.start(), matcher.end()).trim();
             }
 
             checkCommand();
@@ -45,9 +45,9 @@ public class Main {
                     }
                     break;
                 case DELETE:
-                    findCommand = findCommand.replaceAll("[^\\d+]", "");
-                    if (Integer.parseInt(findCommand) < todoList.size()) {
-                        todoList.remove(Integer.parseInt(findCommand));
+                    foundCommand = foundCommand.replaceAll("[^\\d+]", "");
+                    if (Integer.parseInt(foundCommand) < todoList.size()) {
+                        todoList.remove(Integer.parseInt(foundCommand));
                     }
                     break;
                 case EDIT:
@@ -65,19 +65,19 @@ public class Main {
     }
 
     static void checkCommand() {
-        if (findCommand.matches("^EXIT")) {
+        if (foundCommand.matches("^EXIT")) {
             command = Command.EXIT;
-        } else if (findCommand.matches("^HELP")) {
+        } else if (foundCommand.matches("^HELP")) {
             command = Command.HELP;
-        } else if (findCommand.matches("^LIST")) {
+        } else if (foundCommand.matches("^LIST")) {
             command = Command.LIST;
-        } else if (findCommand.matches("^ADD")) {
+        } else if (foundCommand.matches("^ADD")) {
             command = Command.ADD;
-        } else if (findCommand.matches("^ADD\\s\\d+")) {
+        } else if (foundCommand.matches("^ADD\\s\\d+")) {
             command = Command.ADD_NUM;
-        } else if (findCommand.matches("^DELETE\\s\\d+")) {
+        } else if (foundCommand.matches("^DELETE\\s\\d+")) {
             command = Command.DELETE;
-        } else if (findCommand.matches("^EDIT\\s\\d+")) {
+        } else if (foundCommand.matches("^EDIT\\s\\d+")) {
             command = Command.EDIT;
         } else command = Command.NOT_RECOGNIZED;
     }
