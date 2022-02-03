@@ -1,79 +1,97 @@
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Getter
 public class Main {
     static ArrayList<String> todoList = new ArrayList<>();
+    static Command command;
+    static String findCommand;
+
     public static void main(String[] args) {
         boolean check = true;
         Scanner sc = new Scanner(System.in);
         do {
-            System.out.println("Введите одну из команд:");
+            System.out.println("Введите одну из команд (HELP для справки)");
             String inText = sc.nextLine().trim();
-            String findCommand = null;
-            Pattern pattern = Pattern.compile("^(ADD\\s\\d*)?(EDIT\\s\\d+)?(DELETE\\s\\d+)?");
+            Pattern pattern = Pattern.compile("^(ADD\\s\\d*)?(EDIT\\s\\d+)?(DELETE\\s\\d+)?(EXIT)?(LIST)?(HELP)?");
             Matcher matcher = pattern.matcher(inText);
             while (matcher.find()) {
                 findCommand = inText.substring(matcher.start(), matcher.end()).trim();
             }
-            if (inText.matches("EXIT")) {
-                System.out.println("\tПрограма завершена!");
-                check = false;
-                continue;
-            }
 
-            if (inText.matches("LIST")) {
-                getList();
-                continue;
-            }
-
-            if (inText.matches("HELP")) {
-                System.out.println(getHelpList());
-                continue;
-            }
-
-            if (findCommand.matches("^ADD")) {
-                String[] s = inText.split("\\s", 2);
-                todoList.add(s[1]);
-                continue;
-            }
-
-            if (findCommand.matches("^ADD\\s\\d+")) {
-                String[] s = inText.split("\\s+", 3);
-                if (Integer.parseInt(s[1]) <= todoList.size() && s.length == 3) {
-                    todoList.add(Integer.parseInt(s[1]), s[2]);
-                } else if (s.length == 3){
-                    todoList.add(s[2]);
-                }
-                continue;
-            }
-
-            if (findCommand.matches("^DELETE\\s\\d+")) {
-                findCommand = findCommand.replaceAll("[^\\d+]", "");
-                if (Integer.parseInt(findCommand) < todoList.size()) {
-                    todoList.remove(Integer.parseInt(findCommand));
-                }
-                continue;
-            }
-
-            if (findCommand.matches("^EDIT\\s\\d+")) {
-                String[] s = inText.split("\\s+", 3);
-                if (Integer.parseInt(s[1]) < todoList.size() && s.length == 3) {
-                    todoList.set(Integer.parseInt(s[1]), s[2]);
-                }
+            checkCommand();
+            switch (getCommand()) {
+                case EXIT:
+                    System.out.println("\tПрограма завершена!");
+                    check = false;
+                    break;
+                case LIST:
+                    getList();
+                    break;
+                case HELP:
+                    System.out.println(getHelpList());
+                    break;
+                case ADD:
+                    String[] strAdd = inText.split("\\s", 2);
+                    todoList.add(strAdd[1]);
+                    break;
+                case ADD_NUM:
+                    String[] sAddNum = inText.split("\\s+", 3);
+                    if (Integer.parseInt(sAddNum[1]) <= todoList.size() && sAddNum.length == 3) {
+                        todoList.add(Integer.parseInt(sAddNum[1]), sAddNum[2]);
+                    } else if (sAddNum.length == 3) {
+                        todoList.add(sAddNum[2]);
+                    }
+                    break;
+                case DELETE:
+                    findCommand = findCommand.replaceAll("[^\\d+]", "");
+                    if (Integer.parseInt(findCommand) < todoList.size()) {
+                        todoList.remove(Integer.parseInt(findCommand));
+                    }
+                    break;
+                case EDIT:
+                    String[] sEdit = inText.split("\\s+", 3);
+                    if (Integer.parseInt(sEdit[1]) < todoList.size() && sEdit.length == 3) {
+                        todoList.set(Integer.parseInt(sEdit[1]), sEdit[2]);
+                        break;
+                    }
+                default:
+                    System.out.println("Команда не распознана!");
+                    break;
             }
         } while (check);
 
     }
 
+    static void checkCommand() {
+        if (findCommand.matches("^EXIT")) {
+            command = Command.EXIT;
+        } else if (findCommand.matches("^HELP")) {
+            command = Command.HELP;
+        } else if (findCommand.matches("^LIST")) {
+            command = Command.LIST;
+        } else if (findCommand.matches("^ADD")) {
+            command = Command.ADD;
+        } else if (findCommand.matches("^ADD\\s\\d+")) {
+            command = Command.ADD_NUM;
+        } else if (findCommand.matches("^DELETE\\s\\d+")) {
+            command = Command.DELETE;
+        } else if (findCommand.matches("^EDIT\\s\\d+")) {
+            command = Command.EDIT;
+        } else command = Command.NOT_RECOGNIZED;
+    }
+
+    static Command getCommand() {
+        return command;
+    }
+
     static void getList() {
-        for (int i = 0; i < todoList.size(); i++) {
-            System.out.println(i + " - " + todoList.get(i));
-        }
+        if (todoList.size() > 0) {
+            for (int i = 0; i < todoList.size(); i++) {
+                System.out.println(i + " - " + todoList.get(i));
+            }
+        } else System.out.println("Список задач пустой");
     }
 
     static String getHelpList() {

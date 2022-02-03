@@ -1,0 +1,3 @@
+public enum Command {
+    EXIT, LIST, HELP, ADD, ADD_NUM, DELETE, EDIT, NOT_RECOGNIZED
+}
